@@ -1,21 +1,26 @@
 from seleniumbase import BaseCase
 
 
-class TestGoogle(BaseCase):
+class TestStanfordSSO(BaseCase):
 
-    def test_google(self):
-        self.open("https://www.google.com")
+    def test_stanford_sso_redirect(self):
+        # Step 1: Open the application
+        self.open("https://stanford.dev.bestopinions.us/login")
 
-        self.type('textarea[name="q"]', "cat images\n")
+        # Capture initial state
+        self.save_screenshot_to_logs("01_login_page")
 
-        self.wait_for_ready_state_complete()
+        # Step 2: Click the Stanford SSO button
+        self.wait_for_text("Continue with Stanford", timeout=30)
+        self.click('*:contains("Continue with Stanford")')
 
-        self.sleep(5)
+        # Step 3: Wait for Microsoft login page to load
+        self.wait_for_element('img.logo[alt="Microsoft"]', timeout=60)
 
-        self.save_screenshot_to_logs("google_results")
+        # Capture redirected page
+        self.save_screenshot_to_logs("02_microsoft_login")
 
-        print(self.get_current_url())
+        # Step 4: Assert Microsoft logo exists
+        self.assert_element('img.logo[alt="Microsoft"]')
 
-        self.assert_url_contains("q=cat+images")
-
-        print("PASS")
+        print("PASS: Successfully redirected to Microsoft login page")
