@@ -9,51 +9,60 @@ class TestStanfordSSO(BaseCase):
             "https://stanford.dev.bestopinions.us/user/surveys/2625142"
         )
 
-        # Capture initial state
         self.save_screenshot_to_logs("01_survey_page")
 
-        # Step 2: Wait for Stanford SSO button
+        # Step 2: Wait for Stanford button
         self.wait_for_text("Continue with Stanford", timeout=30)
 
-        print("\n===== BEFORE CLICK =====")
-        print("Current URL:")
+        print("\nURL before click:")
         print(self.get_current_url())
 
-        print("\nWindow Handles:")
+        print("\nWindows before click:")
         print(self.driver.window_handles)
 
-        # Step 3: Click Stanford button
-        self.click('*:contains("Continue with Stanford")')
+        # Step 3: Force click using JavaScript
+        self.js_click('*:contains("Continue with Stanford")')
 
-        # Allow redirect/popup to occur
+        # Allow redirects/popups to happen
         self.sleep(10)
 
-        print("\n===== AFTER CLICK =====")
-        print("Window Handles:")
+        print("\nWindows after click:")
         print(self.driver.window_handles)
 
-        # Step 4: Switch to newest window if one exists
-        if len(self.driver.window_handles) > 1:
-            print("\nSwitching to newest window...")
-            self.switch_to_newest_window()
+        found_microsoft = False
 
-        # Allow page to stabilize
-        self.sleep(5)
+        # Step 4: Check every open tab/window
+        for handle in self.driver.window_handles:
+            self.driver.switch_to.window(handle)
 
-        # Step 5: Capture evidence
-        self.save_screenshot_to_logs("02_after_redirect")
+            self.sleep(2)
 
-        print("\nCurrent URL:")
-        print(self.get_current_url())
+            current_url = self.get_current_url()
+            current_title = self.get_page_title()
 
-        print("\nPage Title:")
-        print(self.get_page_title())
+            print("\n==============================")
+            print("Window Handle:", handle)
+            print("URL:", current_url)
+            print("Title:", current_title)
+            print("==============================")
 
-        print("\nPage Body (first 1000 characters):")
-        body_text = self.get_text("body")
-        print(body_text[:1000])
+            self.save_screenshot_to_logs(
+                f"window_{handle[-5:]}"
+            )
 
-        print("\n===== TEST COMPLETED =====")
+            if (
+                "microsoft" in current_url.lower()
+                or "login.microsoftonline" in current_url.lower()
+                or "live.com" in current_url.lower()
+            ):
+                found_microsoft = True
+                print("\nMicrosoft authentication page found!")
+                break
 
-        # Intentional pass while debugging
-        self.assert_true(True)
+        self.assert_true(
+            found_microsoft,
+            "Microsoft login page was not found "
+            "in any open tab/window."
+        )
+
+        print("\nPASS: Microsoft login page detected.")
