@@ -1,0 +1,43 @@
+name: Browser Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chrome
+          - firefox
+          - edge
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install browser drivers
+        run: |
+          seleniumbase install chromedriver
+          seleniumbase install geckodriver
+          seleniumbase install edgedriver
+
+      - name: Run SeleniumBase tests
+        run: |
+          pytest tests/test_google_images.py \
+            --browser=${{ matrix.browser }} \
+            --headless \
+            -s
