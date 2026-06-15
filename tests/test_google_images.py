@@ -1,26 +1,21 @@
 from seleniumbase import BaseCase
 
 
-class TestGoogleImages(BaseCase):
+class TestGoogle(BaseCase):
 
-    def test_google_images(self):
-        # Open Google
+    def test_google(self):
         self.open("https://www.google.com")
 
-        # Take screenshot of initial page
-        self.save_screenshot_to_logs("01_google_home")
+        self.type('textarea[name="q"]', "cat images\n")
 
-        # Search for cat images
-        self.type('textarea[name="q"]', "cat images")
-        self.send_keys('textarea[name="q"]', "\n")
+        self.wait_for_ready_state_complete()
 
-        # Wait for results page
         self.sleep(5)
 
-        # Take screenshot of search results
-        self.save_screenshot_to_logs("02_search_results")
+        self.save_screenshot_to_logs("google_results")
 
-        # Verify that search completed successfully
-        self.assert_title_contains("cat images")
+        print(self.get_current_url())
 
-        print("PASS: Google search worked successfully")
+        self.assert_url_contains("q=cat+images")
+
+        print("PASS")
