@@ -5,7 +5,7 @@ class TestStanfordSSO(BaseCase):
 
     def test_stanford_sso_redirect(self):
         # Step 1: Open the application
-        self.open("https://stanford.dev.bestopinions.us/login")
+        self.open("https://stanford.dev.bestopinions.us/user/surveys/2625142")
 
         # Capture initial state
         self.save_screenshot_to_logs("01_login_page")
