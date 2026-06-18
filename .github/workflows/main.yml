@@ -34,6 +34,7 @@ jobs:
           MS_PASSWORD: ${{ secrets.MS_PASSWORD }}
         run: |
           pytest tests/test_stanford_sso.py \
+            -s \
             --browser=chrome \
             --headless \
             --html=report.html \
