@@ -1,132 +1,227 @@
-import os
-import sys
-
-ROOT_DIR = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        ".."
-    )
-)
-
-sys.path.insert(0, ROOT_DIR)
-
 from seleniumbase import BaseCase
-from utils.gmail_helper import authenticate_gmail
 
+from utils.gmail_helper import (
+authenticate_gmail,
+get_latest_navya_otp,
+)
 
 class TestStanfordSSO(BaseCase):
 
-    def test_stanford_sso_redirect(self):
+```
+def test_stanford_sso_redirect(self):
 
-        # ----------------------------
-        # Stanford Survey URL
-        # ----------------------------
+    self.open(
+        "https://stanford.dev.bestopinions.us/user/surveys/2625142"
+    )
 
-        self.open(
-            "https://stanford.dev.bestopinions.us/user/surveys/2625142"
-        )
+    self.sleep(5)
 
-        self.sleep(5)
+    print(
+        "\n===== INITIAL STATE ====="
+    )
 
-        print("\n===== INITIAL STATE =====")
+    print(
+        f"Current URL: "
+        f"{self.get_current_url()}"
+    )
 
-        print(
-            f"Current URL: "
-            f"{self.get_current_url()}"
-        )
+    print(
+        f"Page Title: "
+        f"{self.get_page_title()}"
+    )
 
-        print(
-            f"Page Title: "
-            f"{self.get_page_title()}"
-        )
+    self.save_screenshot_to_logs(
+        "01_login_page"
+    )
 
-        self.save_screenshot_to_logs(
-            "01_login_page"
-        )
+    # ----------------------------
+    # Stanford Button
+    # ----------------------------
 
-        # ----------------------------
-        # Stanford Button
-        # ----------------------------
+    self.wait_for_text(
+        "Continue with Stanford",
+        timeout=30,
+    )
 
-        self.wait_for_text(
-            "Continue with Stanford",
-            timeout=30,
-        )
+    print(
+        "\nStanford button detected."
+    )
 
-        print(
-            "\nStanford button detected."
-        )
+    self.highlight(
+        "div.jss23"
+    )
 
-        self.highlight(
-            "div.jss23"
-        )
+    self.save_screenshot_to_logs(
+        "02_before_click"
+    )
 
-        self.save_screenshot_to_logs(
-            "02_before_click"
-        )
+    print(
+        "\nAttempting Stanford SSO..."
+    )
 
-        print(
-            "\nAttempting Stanford SSO..."
-        )
+    self.js_click(
+        "div.jss23"
+    )
 
-        self.js_click(
-            "div.jss23"
-        )
+    self.sleep(10)
 
-        self.sleep(10)
+    current_url = (
+        self.get_current_url()
+    )
 
-        # ----------------------------
-        # Validate Microsoft Redirect
-        # ----------------------------
+    print(
+        "\n===== AFTER CLICK ====="
+    )
 
-        current_url = (
-            self.get_current_url()
-        )
+    print(
+        f"Current URL: "
+        f"{current_url}"
+    )
 
-        print(
-            "\n===== AFTER CLICK ====="
-        )
+    print(
+        f"Title: "
+        f"{self.get_page_title()}"
+    )
 
-        print(
-            f"Current URL: "
-            f"{current_url}"
-        )
+    self.save_screenshot_to_logs(
+        "03_microsoft_login"
+    )
 
-        print(
-            f"Title: "
-            f"{self.get_page_title()}"
-        )
+    self.assert_url_contains(
+        "login.microsoftonline.com"
+    )
 
-        self.save_screenshot_to_logs(
-            "03_microsoft_login"
-        )
+    print(
+        "\n[PASS] Microsoft login page detected."
+    )
 
-        self.assert_url_contains(
-            "login.microsoftonline.com"
-        )
+    # ----------------------------
+    # Username
+    # ----------------------------
 
-        print(
-            "\n Microsoft login page detected."
-        )
+    self.wait_for_element(
+        "#i0116",
+        timeout=30,
+    )
 
-        # ----------------------------
-        # Gmail Validation
-        # ----------------------------
+    self.type(
+        "#i0116",
+        "riddhimann@navya.care",
+    )
 
-        print(
-            "\n===== GMAIL AUTH CHECK ====="
-        )
+    self.save_screenshot_to_logs(
+        "04_username_entered"
+    )
 
-        gmail = authenticate_gmail()
+    self.click(
+        "#idSIButton9"
+    )
 
-        self.assert_true(
-            gmail is not None
-        )
+    print(
+        "[PASS] Username entered."
+    )
 
-        print(
-            "\n Gmail authentication validated."
-        )
+    self.sleep(10)
 
-        print(
-            "\n===== TEST PASSED ====="
-        )
+    # ----------------------------
+    # OTP
+    # ----------------------------
+
+    print(
+        "\n===== FETCHING OTP ====="
+    )
+
+    otp = get_latest_navya_otp()
+
+    self.wait_for_element(
+        "#idTxtBx_OTC_Password",
+        timeout=60,
+    )
+
+    self.type(
+        "#idTxtBx_OTC_Password",
+        otp,
+    )
+
+    self.save_screenshot_to_logs(
+        "05_otp_entered"
+    )
+
+    print(
+        "[PASS] OTP entered."
+    )
+
+    self.click(
+        "#idSIButton9"
+    )
+
+    print(
+        "[PASS] Sign In clicked."
+    )
+
+    # ----------------------------
+    # Stanford Redirect
+    # ----------------------------
+
+    print(
+        "\nWaiting for Stanford redirect..."
+    )
+
+    self.sleep(10)
+
+    print(
+        "\n===== AFTER LOGIN ====="
+    )
+
+    print(
+        f"Current URL: "
+        f"{self.get_current_url()}"
+    )
+
+    print(
+        f"Title: "
+        f"{self.get_page_title()}"
+    )
+
+    self.wait_for_element(
+        "#page_title",
+        timeout=60,
+    )
+
+    self.assert_text(
+        "Summary ID",
+        "#page_title",
+    )
+
+    self.save_screenshot_to_logs(
+        "06_survey_loaded"
+    )
+
+    print(
+        "[PASS] Survey page loaded."
+    )
+
+    print(
+        "[PASS] Expert successfully authenticated."
+    )
+
+    print(
+        "\n===== FINAL RESULT ====="
+    )
+
+    print(
+        "[PASS] Stanford SSO completed."
+    )
+
+    print(
+        "[PASS] OTP authentication successful."
+    )
+
+    print(
+        "[PASS] Survey page accessible."
+    )
+
+    print(
+        "[PASS] Expert login verified."
+    )
+```
