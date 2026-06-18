@@ -5,7 +5,24 @@ on:
 
 jobs:
   sso-test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - browser: chrome
+            os: windows-latest
+
+          - browser: firefox
+            os: windows-latest
+
+          - browser: edge
+            os: windows-latest
+
+          - browser: safari
+            os: macos-latest
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Repository
@@ -21,9 +38,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Chromium
+      - name: Install Browser Drivers (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
         run: |
           seleniumbase install chromedriver
+          seleniumbase install geckodriver
+          seleniumbase install edgedriver
+
+      - name: Verify Safari Driver (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          safaridriver --version
 
       - name: Run Stanford SSO Test
         env:
@@ -35,7 +61,7 @@ jobs:
         run: |
           pytest tests/test_stanford_sso.py \
             -s \
-            --browser=chrome \
+            --browser=${{ matrix.browser }} \
             --headless \
             --html=report.html \
             --self-contained-html
@@ -44,7 +70,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: selenium-report
+          name: selenium-report-${{ matrix.browser }}
           path: |
             report.html
             latest_logs/
