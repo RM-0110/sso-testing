@@ -7,7 +7,6 @@ jobs:
 sso-test:
 name: ${{ matrix.browser }}
 
-```
 strategy:
   fail-fast: false
 
