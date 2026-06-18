@@ -1,9 +1,19 @@
 from seleniumbase import BaseCase
+import sys
+import os
+
+sys.path.append(
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            ".."
+        )
+    )
+)
 
 from utils.gmail_helper import (
     get_latest_navya_otp,
 )
-
 
 class TestStanfordSSO(BaseCase):
 
