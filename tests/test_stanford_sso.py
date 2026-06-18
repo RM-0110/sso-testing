@@ -1,5 +1,16 @@
-from seleniumbase import BaseCase
+import os
+import sys
 
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        ".."
+    )
+)
+
+sys.path.insert(0, ROOT_DIR)
+
+from seleniumbase import BaseCase
 from utils.gmail_helper import authenticate_gmail
 
 
