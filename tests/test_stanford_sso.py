@@ -132,7 +132,7 @@ class TestStanfordSSO(BaseCase):
             "\nWaiting for Stanford redirect..."
         )
 
-        self.sleep(10)
+        self.sleep(20)
 
         print(
             "\n===== AFTER LOGIN ====="
