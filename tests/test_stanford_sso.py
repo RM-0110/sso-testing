@@ -106,7 +106,7 @@ class TestStanfordSSO(BaseCase):
         )
 
         print(
-            "\n✅ Microsoft login page detected."
+            "\n Microsoft login page detected."
         )
 
         # ----------------------------
@@ -124,7 +124,7 @@ class TestStanfordSSO(BaseCase):
         )
 
         print(
-            "\n✅ Gmail authentication validated."
+            "\n Gmail authentication validated."
         )
 
         print(
