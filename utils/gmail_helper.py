@@ -1,119 +1,236 @@
-import json
 import os
+import json
+import base64
+import re
+import datetime
 
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-
 SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly"
+"https://www.googleapis.com/auth/gmail.readonly"
 ]
 
+OTP_SUBJECT = (
+"Your Navya Network account verification code"
+)
 
 def authenticate_gmail():
-    """
-    Authenticates to Gmail using:
-    - GMAIL_TOKEN_JSON
-    - GMAIL_CREDENTIALS_JSON
-
-    Returns:
-        gmail service object
-
-    Raises:
-        RuntimeError with actionable message
-    """
-
-    token_secret = os.getenv("GMAIL_TOKEN_JSON")
-
-    if not token_secret:
-        raise RuntimeError(
-            """
- FATAL ERROR: GMAIL_TOKEN_JSON secret not found.
-
-Action required:
-Add the complete contents of token.json to the
-GMAIL_TOKEN_JSON GitHub Secret.
-
-Workflow terminated because OTP retrieval
-is a mandatory prerequisite for SSO validation.
 """
+Authenticates Gmail using GitHub secrets.
+
+```
+Uses:
+GMAIL_TOKEN_JSON
+GMAIL_CREDENTIALS_JSON
+
+Fails hard if token is invalid,
+expired, or revoked.
+"""
+
+token_json = os.environ.get(
+    "GMAIL_TOKEN_JSON"
+)
+
+credentials_json = os.environ.get(
+    "GMAIL_CREDENTIALS_JSON"
+)
+
+if not token_json:
+    raise Exception(
+        "FATAL ERROR: "
+        "GMAIL_TOKEN_JSON secret not found."
+    )
+
+if not credentials_json:
+    raise Exception(
+        "FATAL ERROR: "
+        "GMAIL_CREDENTIALS_JSON secret not found."
+    )
+
+creds = Credentials.from_authorized_user_info(
+    json.loads(token_json),
+    SCOPES,
+)
+
+try:
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+
+except Exception as e:
+    raise Exception(
+        "FATAL ERROR: "
+        "Refresh token expired or revoked. "
+        "Regenerate token.json and update "
+        "GMAIL_TOKEN_JSON secret."
+    ) from e
+
+gmail = build(
+    "gmail",
+    "v1",
+    credentials=creds,
+)
+
+profile = gmail.users().getProfile(
+    userId="me"
+).execute()
+
+email = profile.get(
+    "emailAddress",
+    "unknown"
+)
+
+print(
+    f"[PASS] Gmail authenticated successfully: "
+    f"{email}"
+)
+
+return gmail
+```
+
+def get_message_body(
+gmail,
+message_id,
+):
+message = gmail.users().messages().get(
+userId="me",
+id=message_id,
+format="full",
+).execute()
+
+```
+payload = message.get(
+    "payload",
+    {}
+)
+
+data = None
+
+if payload.get(
+    "body",
+    {}
+).get(
+    "data"
+):
+    data = payload["body"]["data"]
+
+else:
+    parts = payload.get(
+        "parts",
+        []
+    )
+
+    for part in parts:
+        body = part.get(
+            "body",
+            {}
         )
 
-    with open("token.json", "w") as f:
-        f.write(token_secret)
+        if body.get(
+            "data"
+        ):
+            data = body["data"]
+            break
 
-    credentials_secret = os.getenv("GMAIL_CREDENTIALS_JSON")
+if not data:
+    return ""
 
-    if credentials_secret:
-        with open("credentials.json", "w") as f:
-            f.write(credentials_secret)
+decoded = base64.urlsafe_b64decode(
+    data
+).decode(
+    "utf-8",
+    errors="ignore",
+)
 
-    try:
-        creds = Credentials.from_authorized_user_file(
-            "token.json",
-            SCOPES,
+return decoded
+```
+
+def get_latest_navya_otp():
+"""
+Finds newest OTP email.
+
+```
+Subject:
+Your Navya Network account verification code
+
+Returns:
+8 digit OTP
+"""
+
+gmail = authenticate_gmail()
+
+query = (
+    'subject:"'
+    + OTP_SUBJECT
+    + '" newer_than:1d'
+)
+
+response = gmail.users().messages().list(
+    userId="me",
+    q=query,
+    maxResults=20,
+).execute()
+
+messages = response.get(
+    "messages",
+    []
+)
+
+if not messages:
+    raise Exception(
+        "FATAL ERROR: "
+        "No OTP emails found."
+    )
+
+now = datetime.datetime.utcnow()
+
+for message in messages:
+
+    msg = gmail.users().messages().get(
+        userId="me",
+        id=message["id"],
+        format="metadata",
+    ).execute()
+
+    internal_date = int(
+        msg["internalDate"]
+    )
+
+    email_time = (
+        datetime.datetime.utcfromtimestamp(
+            internal_date / 1000
         )
+    )
 
-        if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+    age_minutes = (
+        now - email_time
+    ).total_seconds() / 60
 
-        gmail = build(
-            "gmail",
-            "v1",
-            credentials=creds,
-        )
+    if age_minutes > 10:
+        continue
 
-        profile = (
-            gmail.users()
-            .getProfile(userId="me")
-            .execute()
-        )
+    body = get_message_body(
+        gmail,
+        message["id"],
+    )
+
+    match = re.search(
+        r"\b(\d{8})\b",
+        body,
+    )
+
+    if match:
+        otp = match.group(1)
 
         print(
-            f"Gmail authenticated successfully: "
-            f"{profile.get('emailAddress')}"
+            "[PASS] OTP email found."
         )
 
-        return gmail
+        return otp
 
-    except Exception as e:
-
-        error_text = str(e)
-
-        if (
-            "invalid_grant" in error_text
-            or "Token has been expired or revoked" in error_text
-        ):
-            raise RuntimeError(
-                """
- FATAL ERROR: Gmail authentication failed.
-
-Reason:
-Google rejected the refresh token (invalid_grant).
-
-Most likely causes:
-- Refresh token expired
-- Refresh token revoked
-- New token.json invalidated the old token
-
-Action required:
-1. Regenerate token.json locally.
-2. Update GMAIL_TOKEN_JSON secret.
-3. Re-run workflow.
-
-Workflow terminated because OTP retrieval
-is a mandatory prerequisite for SSO validation.
-"""
-            )
-
-        raise RuntimeError(
-            f"""
-FATAL ERROR: Gmail authentication failed.
-
-Underlying error:
-{error_text}
-
-Workflow terminated.
-"""
-        )
+raise Exception(
+    "FATAL ERROR: "
+    "No valid OTP found in recent emails."
+)
+```
