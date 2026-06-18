@@ -1,5 +1,6 @@
-seleniumbase
-pytest
+seleniumbase>=4.50.0
+pytest>=9.0.0
+pytest-html>=4.0.0
 google-api-python-client
 google-auth
 google-auth-oauthlib
