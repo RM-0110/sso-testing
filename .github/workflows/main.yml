@@ -69,4 +69,3 @@ steps:
       path: |
         report.html
         latest_logs/
-```
