@@ -58,7 +58,7 @@ jobs:
 
           MS_USERNAME: ${{ secrets.MS_USERNAME }}
           MS_PASSWORD: ${{ secrets.MS_PASSWORD }}
-        run: |
+        run: >
           pytest tests/test_stanford_sso.py \
             -s \
             --browser=${{ matrix.browser }} \
