@@ -29,7 +29,7 @@ def authenticate_gmail():
     if not token_secret:
         raise RuntimeError(
             """
-❌ FATAL ERROR: GMAIL_TOKEN_JSON secret not found.
+ FATAL ERROR: GMAIL_TOKEN_JSON secret not found.
 
 Action required:
 Add the complete contents of token.json to the
