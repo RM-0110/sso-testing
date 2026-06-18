@@ -87,7 +87,7 @@ is a mandatory prerequisite for SSO validation.
         ):
             raise RuntimeError(
                 """
-❌ FATAL ERROR: Gmail authentication failed.
+ FATAL ERROR: Gmail authentication failed.
 
 Reason:
 Google rejected the refresh token (invalid_grant).
