@@ -71,7 +71,7 @@ is a mandatory prerequisite for SSO validation.
         )
 
         print(
-            f"✅ Gmail authenticated successfully: "
+            f"Gmail authenticated successfully: "
             f"{profile.get('emailAddress')}"
         )
 
@@ -109,7 +109,7 @@ is a mandatory prerequisite for SSO validation.
 
         raise RuntimeError(
             f"""
-❌ FATAL ERROR: Gmail authentication failed.
+FATAL ERROR: Gmail authentication failed.
 
 Underlying error:
 {error_text}
