@@ -5,10 +5,12 @@ workflow_dispatch:
 
 jobs:
 sso-test:
-strategy:
-fail-fast: false
+name: ${{ matrix.browser }}
 
 ```
+strategy:
+  fail-fast: false
+
   matrix:
     include:
       - browser: chrome
@@ -41,6 +43,7 @@ steps:
 
   - name: Install Browser Drivers (Windows)
     if: runner.os == 'Windows'
+    shell: bash
     run: |
       seleniumbase install chromedriver
       seleniumbase install geckodriver
