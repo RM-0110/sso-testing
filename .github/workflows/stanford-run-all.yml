@@ -29,6 +29,8 @@ jobs:
 
   summary:
 
+    if: always()
+
     needs:
       - chrome
       - firefox
