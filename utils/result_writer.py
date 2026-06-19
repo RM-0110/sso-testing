@@ -18,6 +18,8 @@ def write_result(
         "status": status,
         "error": error,
         "timestamp": datetime.utcnow().isoformat(),
+        "workflow": os.getenv("GITHUB_WORKFLOW"),
+        "run_id": os.getenv("GITHUB_RUN_ID")
     }
 
     with open(
