@@ -6,7 +6,6 @@ get_latest_navya_otp,
 
 class TestStanfordSSO(BaseCase):
 
-```
 def test_stanford_sso_redirect(self):
 
     # ---------------------------------
@@ -257,4 +256,3 @@ def test_stanford_sso_redirect(self):
     print(
         "[PASS] Expert login verified."
     )
-```
