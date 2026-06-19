@@ -6,19 +6,19 @@ on:
 jobs:
 
   chrome:
-    uses: ./.github/workflows/chrome.yml
+    uses: ./.github/workflows/stanford-chrome.yml
 
   firefox:
     needs: chrome
-    uses: ./.github/workflows/firefox.yml
+    uses: ./.github/workflows/stanford-firefox.yml
 
   edge:
     needs: firefox
-    uses: ./.github/workflows/edge.yml
+    uses: ./.github/workflows/stanford-edge.yml
 
   safari:
     needs: edge
-    uses: ./.github/workflows/safari.yml
+    uses: ./.github/workflows/stanford-safari.yml
 
   summary:
 
