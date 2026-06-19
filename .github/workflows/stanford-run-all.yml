@@ -11,16 +11,19 @@ jobs:
 
   firefox:
     needs: chrome
+    if: always()
     uses: ./.github/workflows/stanford-firefox.yml
     secrets: inherit
 
   edge:
     needs: firefox
+    if: always()
     uses: ./.github/workflows/stanford-edge.yml
     secrets: inherit
 
   safari:
     needs: edge
+    if: always()
     uses: ./.github/workflows/stanford-safari.yml
     secrets: inherit
 
