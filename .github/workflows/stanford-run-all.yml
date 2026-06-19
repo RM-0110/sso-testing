@@ -7,18 +7,22 @@ jobs:
 
   chrome:
     uses: ./.github/workflows/stanford-chrome.yml
+    secrets: inherit
 
   firefox:
     needs: chrome
     uses: ./.github/workflows/stanford-firefox.yml
+    secrets: inherit
 
   edge:
     needs: firefox
     uses: ./.github/workflows/stanford-edge.yml
+    secrets: inherit
 
   safari:
     needs: edge
     uses: ./.github/workflows/stanford-safari.yml
+    secrets: inherit
 
   summary:
 
