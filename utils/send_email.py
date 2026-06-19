@@ -12,7 +12,7 @@ def send_email(
 
     sender_email = "riddhimann@navya.care"
 
-    recipient_list = ["armugam@navya.care", "pushpa@navya.care","kirana@navya.care"]
+    recipient_list = ["riddhimann@navya.care, ""kirana@navya.care"]
 
     password = os.getenv(
         "APP_PASSWORD"
