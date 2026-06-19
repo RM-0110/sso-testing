@@ -28,6 +28,7 @@ jobs:
 
       - name: Run Stanford SSO Test (Chrome)
         env:
+          TEST_BROWSER: chrome
           GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
           GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
         run: pytest tests/test_stanford_sso.py -s --browser=chrome --headless --html=report.html --self-contained-html
