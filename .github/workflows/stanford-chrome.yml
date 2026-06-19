@@ -41,3 +41,10 @@ jobs:
           path: |
             report.html
             latest_logs/
+
+      - name: Upload Browser Result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-result-chrome
+          path: results/
