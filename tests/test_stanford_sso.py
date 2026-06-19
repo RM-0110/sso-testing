@@ -81,7 +81,7 @@ class TestStanfordSSO(BaseCase):
                 "//div[.//span[contains(text(),'Continue with Stanford')]]"
             )
             
-            self.sleep(10)
+            self.sleep(5)
             
             print(
                 "\n===== AFTER CLICK ====="
