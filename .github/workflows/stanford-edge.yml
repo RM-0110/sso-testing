@@ -1,11 +1,11 @@
-name: Stanford SSO - Safari
+name: Stanford SSO - Edge
 
 on:
   workflow_dispatch:
 
 jobs:
   safari-test:
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout Repository
