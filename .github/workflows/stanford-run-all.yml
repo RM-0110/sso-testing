@@ -60,17 +60,17 @@ jobs:
           name: browser-result-chrome
           path: results
 
-      - name: Download Firefox Result
-        uses: actions/download-artifact@v4
-        with:
-          name: browser-result-firefox
-          path: results
+      # - name: Download Firefox Result
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: browser-result-firefox
+      #     path: results
 
-      - name: Download Edge Result
-        uses: actions/download-artifact@v4
-        with:
-          name: browser-result-edge
-          path: results
+      # - name: Download Edge Result
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: browser-result-edge
+      #     path: results
 
       - name: Download Safari Result
         uses: actions/download-artifact@v4
