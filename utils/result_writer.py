@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 def write_result(
@@ -17,7 +17,7 @@ def write_result(
         "browser": browser,
         "status": status,
         "error": error,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "workflow": os.getenv("GITHUB_WORKFLOW"),
         "run_id": os.getenv("GITHUB_RUN_ID")
     }
