@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  safari-test:
+  edge-test:
     runs-on: windows-latest
 
     steps:
@@ -21,11 +21,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify Safari Driver
+      - name: Install Edge Driver
+        shell: bash
         run: |
-          safaridriver --version
+          seleniumbase install edgedriver
 
-      - name: Run Stanford SSO Test (Safari)
+      - name: Run Stanford SSO Test (Edge)
         env:
           TEST_BROWSER: edge
           GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
@@ -36,7 +37,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: selenium-report-safari
+          name: selenium-report-edge
           path: |
             report.html
             latest_logs/
