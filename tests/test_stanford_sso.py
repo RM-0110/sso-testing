@@ -65,8 +65,8 @@ class TestStanfordSSO(BaseCase):
                 "\nStanford button detected."
             )
             
-            self.highlight(
-                "div.jss23"
+            self.js_click(
+                "//div[.//span[contains(text(),'Continue with Stanford')]]"
             )
             
             self.save_screenshot_to_logs(
@@ -78,7 +78,7 @@ class TestStanfordSSO(BaseCase):
             )
             
             self.js_click(
-                "div.jss23"
+                "//div[.//span[contains(text(),'Continue with Stanford')]]"
             )
             
             self.sleep(10)
