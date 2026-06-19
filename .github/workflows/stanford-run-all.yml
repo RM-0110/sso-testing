@@ -22,7 +22,7 @@ jobs:
     secrets: inherit
 
   safari:
-    needs: chrome
+    needs: edge
     if: always()
     uses: ./.github/workflows/stanford-safari.yml
     secrets: inherit
