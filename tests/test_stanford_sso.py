@@ -236,16 +236,16 @@ class TestStanfordSSO(BaseCase):
             )
             
             self.assert_text(
-                "Summary ID",
+                "Case ID",
                 "#page_title",
             )
             
             self.save_screenshot_to_logs(
-                "06_survey_loaded"
+                "06_case_loaded"
             )
             
             print(
-                "[PASS] Survey page loaded."
+                "[PASS] Case page loaded."
             )
             
             print(
@@ -265,7 +265,7 @@ class TestStanfordSSO(BaseCase):
             )
             
             print(
-                "[PASS] Survey page accessible."
+                "[PASS] Case page accessible."
             )
             
             print(
